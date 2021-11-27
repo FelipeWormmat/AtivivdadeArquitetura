@@ -1,46 +1,56 @@
 import string
 import random
 
-class Vehicle:
-    id = str,
-    model = str,
-    catalogue_price = int,
-    is_electric = bool,
-    license_plate = str,
-    tax_percentage = int
-    
-    def __init__ (self, model, catalogue_price, is_electric):
-        self.model = model
-        self.catalogue_price = catalogue_price
-        self.is_electric = is_electric
-        self.id = CarRegistry.generate_vehicle_id(12)
-        self.license_plate = CarRegistry.generate_vehicle_license(self.id)
-        self.tax_percentage = TaxPercentage.tax_percentage(self)
 
-class CarRegistry:
-    def generate_vehicle_id(length):
+class VehicleRegistry:
+
+    def generate_vehicle_id(self, length):
         return ''.join(random.choices(string.ascii_uppercase, k=length))
 
-    def generate_vehicle_license(id):
+    def generate_vehicle_license(self, id):
         first_section = id[:2]
         second_section = ''.join(random.choices(string.digits, k=2))
         third_section = ''.join(random.choices(string.ascii_uppercase, k=2))
         return f"{first_section}-{second_section}-{third_section}"
 
-class TaxPercentage:
-    def tax_percentage(vehicle):
-        if(vehicle.is_electric):
-            return 0.5
-        else:
-            return 0.2
 
 class Application:
-    def register_vehicle(self, brand: string, catalogue_price: int, is_electric: bool):
-        car = Vehicle(brand, catalogue_price, is_electric)
-        print(f'Marca: {car.model}')
-        print(f'ID: {car.id}')
-        print(f'Placa: {car.license_plate}')
-        print(f'Imposto a ser pago: {car.tax_percentage * car.catalogue_price}')
+
+    def register_vehicle(self, brand: string):
+        registry = VehicleRegistry()
+
+        # gera um id com 12 caracteres
+        vehicle_id = registry.generate_vehicle_id(12)
+
+        # gera a placa de baseado no id do veículo
+        license_plate = registry.generate_vehicle_license(vehicle_id)
+
+        # determina o preco do veiculo
+        catalogue_price = 0
+        if brand == 'Tesla Model 3':
+            catalogue_price = 445000
+        elif brand == 'Chevrolet Bold':
+            catalogue_price = 317000
+        elif brand == 'BMW i3':
+            catalogue_price = 319950
+        elif 'Honda Civic LX':
+            catalogue_price = 127900
+
+        # calcula a taxa de imposto. o padrão é 5%. para carros eletréticos o valor é 2%
+        tax_percentage = 0.05
+        electric_models = ['Tesla Model 3',
+                           'Chevrolet Bold', 'BMW i3', 'Honda Civic LX']
+        if brand in electric_models:
+            tax_percentage = 0.02
+
+        # calcula a valor a ser pago
+        payable_tax = tax_percentage * catalogue_price
+
+        print(f'Marca: {brand}')
+        print(f'ID: {vehicle_id}')
+        print(f'Placa: {license_plate}')
+        print(f'Imposto a ser pago: {payable_tax}')
+
 
 app = Application()
-app.register_vehicle('Honda Civic LX',127900, True)
+app.register_vehicle('Honda Civic LX')
